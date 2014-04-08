@@ -1,14 +1,25 @@
 
-/** User table
+/** General environment settings *****************************************************/
+
+PRAGMA foreign_keys = ON; -- this one is *really* important for referential integrity
+
+/*************************************************************************************/
+
+
+
+/** User table *************************************************************
 	____
 	|ID				|primary key int not null
 	|FirstName		|text
 	|LastName		|text
+	|Email          |text - will be used as login
+	|Password		|sha1 hashed password
 	|Created		|Date/Time
 	|Updated		|Date/Time
 	|UpdatedBy		|int not null (foreign key constrained to ID of user who updated)
 	|IsActive		|bool (inactive users will be retained for history but cannot login and do not show in reports)
-**/
+
+*************************************************************************************/
 
 drop table if exists User;
 
@@ -16,24 +27,22 @@ create table if not exists User(
 	ID integer primary key asc, 
 	FirstName text, 
 	LastName text, 
+	Email text,
+	Password text,
 	Created DATETIME DEFAULT CURRENT_TIMESTAMP,
 	Updated DATETIME DEFAULT CURRENT_TIMESTAMP,
 	UpdatedBy int, 
 	IsActive int
 );
 
-/* Initial values. Note that only the root admin user specifies the primary key, all others
-   get assigned values by the database engine.   */
-insert into User(ID, FirstName, LastName, UpdatedBy, IsActive) values(1, 'Westbank', 'Admin', 1, 1);
-insert into User(FirstName, LastName, UpdatedBy, IsActive) values('Jason', 'Brice', 1, 1);	
-insert into User(FirstName, LastName, UpdatedBy, IsActive) values('Mary', 'Williams', 1, 1);
-insert into User(FirstName, LastName, UpdatedBy, IsActive) values('Chris', 'Brailas', 1, 1);				
+			
 	
-/**	Role table
+/*********	Role table  *************************************************************
 	____
 	|ID				|primary key int not null
 	|Name			|text - name of role (Admin, Volunteer, student)
-**/
+
+*************************************************************************************/
 
 drop table if exists Role;
 
@@ -45,11 +54,13 @@ create table if not exists Role(
 drop index if exists idx_Role_Name;
 create index if not exists idx_Role_Name on Role(Name); 
 
-/* initial values */
-insert into Role(ID, Name) values(1, 'Admin');
-insert into Role(ID, Name) values(2, 'Volunteer');
-insert into Role(ID, Name) values(3, 'Student Volunteer');
+/*********	UserRole table (resolves many-to-many relationship between User and Role) *
+	____
+	|ID				|primary key int not null
+	|RoleID			|int foreign key to Role table
+    |UserID			|int foreign key to User table
 
+*************************************************************************************/
 
 drop table if exists UserRole;
 
@@ -67,11 +78,10 @@ drop index if exists idx_fk_UserRole_Role;
 create index if not exists idx_fk_UserRole_User on UserRole(UserID); 
 create index if not exists idx_fk_UserRole_Role on UserRole(RoleID);
 	
-/* Initial values. */
-insert into UserRole(UserID, RoleID) values( (select ID from User where FirstName='Jason' and LastName='Brice'), (select ID from Role where Name='Admin'));
+
 
 	
-/**	TimeEntry table
+/**	TimeEntry table *************************************************************
 	_____
 	|ID				|primary key int not null
 	|UserID			|foreign key int constrained to User table ID
@@ -80,7 +90,8 @@ insert into UserRole(UserID, RoleID) values( (select ID from User where FirstNam
 	|CreatedBy		|foreign key int constrained to User table ID
 	|Updated		|Date/Time most recent record update
 	|UpdatedBy		|foreign key int constrained to User table ID
-**/
+
+*************************************************************************************/
 
 drop table if exists TimeEntry;
 

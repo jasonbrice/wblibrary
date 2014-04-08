@@ -1,0 +1,14 @@
+Home 
+    |_Admin
+	        |_ Login / Logout
+	        |_ User Create / Update / Deactivate
+			|_ Time Entry Create / Update / Deactivate
+			|_ Reports
+			          |_ Time Entries (selection criteria = date/time range, person, location, role)
+					  |_ Active users
+			
+	|_ User
+            |_ Login / Logout
+            |_ Manage account (limited to: First name, last name, default role - choice of NJHS, NHS, CHAPS, Other)
+            |_ Create time entry
+            |_ View / update previous time entries		
