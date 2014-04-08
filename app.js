@@ -8,17 +8,7 @@ var sqlite3 = require('sqlite3').verbose();
 
 var sha1 = require('sha1');
 
-//var users = [ {
-//	id : 1,
-//	username : 'bob',
-//	password : 'secret',
-//	email : 'bob@example.com'
-//}, {
-//	id : 2,
-//	username : 'joe',
-//	password : 'birthday',
-//	email : 'joe@example.com'
-//} ];
+var users= [{}];
 
 function findById(id, fn) {
 	var idx = id - 1;
@@ -82,9 +72,10 @@ passport.use(new LocalStrategy( function(username, password, done) {
 		if (row) {
 			var user = { id : row.ID, username : row.Email, password : row.Password, email : row.Email };
 
-			db.close();
+			
 			if (user.password === sha1(password)) 
 			{
+				users.push(user); // add user to known users
 				console.log("Matching user found");
 				return done( null, user); 
 
@@ -97,6 +88,9 @@ passport.use(new LocalStrategy( function(username, password, done) {
 			console.log("Unknown user");
 			return done( null, false, { message : 'Unknown user ' + username });
 		}
+		
+		db.close();
+		
 	});
 
 }));
@@ -129,13 +123,6 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(app.router);
-
-app.use(function(req, res, next) {
-	res.on('header', function() {
-		console.trace('HEADERS GOING TO BE WRITTEN');
-	});
-	next();
-});
 
 // development only
 if ('development' == app.get('env')) {
