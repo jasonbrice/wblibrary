@@ -1,0 +1,19 @@
+extends layout
+
+block content
+  h1= title
+  
+  form(method='post' name='login')
+    div
+      label Username (email):
+      input(type='text',name='username',id='username', value=username)
+    
+    div
+      label Password:
+      input(type='password',name='password',id='password')
+    
+    div
+      input(type='submit' value='Log In')  
+      
+    div
+      p= message
