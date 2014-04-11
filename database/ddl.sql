@@ -12,6 +12,13 @@ PRAGMA foreign_keys = ON; -- this one is *really* important for referential inte
 
 /*************************************************************************************/
 
+drop table if exists TimeEntry;
+drop table if exists UserRole;
+drop table if exists User;
+drop table if exists Role;
+drop table if exists Affiliation;
+
+
 
 /*********	Affiliation table  *************************************************************
 	____
@@ -19,8 +26,6 @@ PRAGMA foreign_keys = ON; -- this one is *really* important for referential inte
 	|Name			|text - name of Affiliation (NJHS, NHS, CHAPS, Other)
 
 *************************************************************************************/
-
-drop table if exists Affiliation;
 
 create table if not exists Affiliation(
 	ID integer primary key asc,
@@ -45,7 +50,6 @@ create index if not exists idx_Affiliation_Name on Affiliation(Name);
 
 *************************************************************************************/
 
-drop table if exists User;
 
 create table if not exists User(
 	ID integer primary key asc, 
@@ -72,7 +76,6 @@ create index if not exists idx_fk_User_Affiliation on User(AffiliationID);
 
 *************************************************************************************/
 
-drop table if exists Role;
 
 create table if not exists Role(
 	ID integer primary key asc,
@@ -121,7 +124,7 @@ create index if not exists idx_fk_UserRole_Role on UserRole(RoleID);
 
 *************************************************************************************/
 
-drop table if exists TimeEntry;
+
 
 create table if not exists TimeEntry(
 	ID integer primary key asc,

@@ -2,12 +2,13 @@
  * Module dependencies.
  */
 
+var routes = require('./routes');
+var user = require('./routes/user');
+var http = require('http');
+var path = require('path');
 var express = require('express'), passport = require('passport'), flash = require('connect-flash'), LocalStrategy = require('passport-local').Strategy;
-
 var sqlite3 = require('sqlite3').verbose();
-
 var sha1 = require('sha1');
-
 var users= [{}];
 
 function findById(id, fn) {
@@ -51,7 +52,7 @@ passport.use(new LocalStrategy( function(username, password, done) {
 	//findByUsername( username, function(err, user) {
 
 	var dbpath = "./database/db.sqlite";
-
+	
 	var db = new sqlite3.Database( dbpath, function(err) {
 		if (err){
 			console.log(err);
@@ -61,7 +62,7 @@ passport.use(new LocalStrategy( function(username, password, done) {
 
 	var query = "select ID, FirstName, LastName, Email, Password, IsActive from User where lower(Email)='" + username.toLowerCase().trim() + "';";
 
-	console.log("querying " + dbpath + " with: " + query);
+	console.log("querying " + path.resolve(dbpath) + " with: " + query);
 
 	db.get(query, function(err, row) {
 		if (err){
@@ -95,10 +96,7 @@ passport.use(new LocalStrategy( function(username, password, done) {
 
 }));
 
-var routes = require('./routes');
-var user = require('./routes/user');
-var http = require('http');
-var path = require('path');
+
 
 var app = express();
 
