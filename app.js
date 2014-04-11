@@ -132,6 +132,9 @@ if ('development' == app.get('env')) {
 app.get('/', routes.index);
 app.get('/users', user.list);
 
+// GET /login
+// we're using a local implementation (rather than OAuth)
+// https://github.com/jaredhanson/passport-local/blob/master/examples/login/app.js
 app.get('/login', function(req, res) {
 	res.render('login', {
 		user : req.user,
