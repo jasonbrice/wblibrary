@@ -1,11 +1,35 @@
 
+/* ======= This code was tested with version 3.8.1 of Sqlite (3.8.1 2013-10-17 12:57:35 c78be6d786c19073b3a6730dfe3fb1be54f5657a) ========= */
+/* ======= To run this code from a command line, navigate to the directory containing the .sqlite database and type:              ========= */
+/* =======                                                                                                                        ========= */
+/* =======                                                              C:\SomeDirectory>sqlite3 db.sqlite < ddl.sql              ========= */
+/* =======                                                               ^^ directory ^^          ^ db ^     ^ file^              ========= */
+
 /** General environment settings *****************************************************/
 
 PRAGMA foreign_keys = ON; -- this one is *really* important for referential integrity
+--.echo ON -- turn this off it you want the database creation to run silently
 
 /*************************************************************************************/
 
 
+/*********	Affiliation table  *************************************************************
+	____
+	|ID				|primary key int not null
+	|Name			|text - name of Affiliation (NJHS, NHS, CHAPS, Other)
+
+*************************************************************************************/
+
+drop table if exists Affiliation;
+
+create table if not exists Affiliation(
+	ID integer primary key asc,
+	Name text
+);
+
+drop index if exists idx_Affiliation_Name;
+create index if not exists idx_Affiliation_Name on Affiliation(Name); 
+			
 
 /** User table *************************************************************
 	____
@@ -32,10 +56,14 @@ create table if not exists User(
 	Created DATETIME DEFAULT CURRENT_TIMESTAMP,
 	Updated DATETIME DEFAULT CURRENT_TIMESTAMP,
 	UpdatedBy int, 
-	IsActive int
+	IsActive int, 
+	AffiliationID integer, 
+	FOREIGN KEY(AffiliationID) REFERENCES Affiliation(ID)
 );
 
-			
+drop index if exists idx_fk_User_Affiliation;
+
+create index if not exists idx_fk_User_Affiliation on User(AffiliationID);
 	
 /*********	Role table  *************************************************************
 	____
@@ -99,6 +127,7 @@ create table if not exists TimeEntry(
 	ID integer primary key asc,
 	UserID integer,
 	Hours number,
+	Comment text, 
 	Created DATETIME DEFAULT CURRENT_TIMESTAMP,
 	CreatedBy integer,
 	Updated DATETIME DEFAULT CURRENT_TIMESTAMP,
