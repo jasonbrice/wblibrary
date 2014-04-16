@@ -1,0 +1,37 @@
+extends layout
+
+block content
+  
+  - if(error)
+    p= error
+  
+  h1= title
+  
+  h3
+    table(width='100%' id="tablesorter-users" class="display" )
+      thead
+         tr(style='font-weight:bold;')
+            th Edit
+            th First
+            th Last
+            th Email
+            th Affiliation
+            th Created
+            th Updated
+      tbody
+        - for (var r in users)
+          tr
+            td
+              a(href= '/users/edit/' + users[r].ID) Edit
+            td= users[r].FirstName
+            td= users[r].LastName
+            td= users[r].Email
+            td= users[r].Affiliation
+            td= users[r].Created
+            td= users[r].Updated
+  
+  script(type='text/javascript').
+    $(document).ready( function() { $('#tablesorter-users').dataTable( { "bJQueryUI": true } ); } );
+
+  
+    

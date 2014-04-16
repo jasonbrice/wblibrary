@@ -1,0 +1,46 @@
+extends layout
+
+block content
+  
+  - if(error)
+    p= error
+  
+  h1= title
+  
+  h3
+    div(class='dataTables_filter')
+      table(width='50%' id="tablesorter-users" class="display" )
+        thead
+          tr(style='font-weight:bold;')
+            th 
+              th 
+          tbody
+          tr
+              td First Name
+              td 
+                input(type='text' id='FirstName' name='FirstName' value=users.FirstName)
+          tr
+            td Last Name
+              td 
+                input(type='text' id='LastName' name='LastName' value=users.LastName)
+          tr
+            td Email
+              td 
+                input(type='text' id='Email' name='Email' value=users.Email)
+          tr(style='valign:top;')
+            td Affiliation
+              td
+                div(id='radioset' class="ui-buttonset")
+                  - for (var a in affiliations) 
+                      - var aria = users.AffiliationId==affiliations[a].ID
+                      input(type='radio', class="ui-helper-hidden-accessible", name='AffiliationId', value=affiliations[a].ID, checked=users.AffiliationId==affiliations[a].ID)
+                      label(for='AffiliationId', class="ui-button ui-widget ui-state-default ui-button-text-only", role="button" aria-disabled="false" aria-pressed=aria?'true':'false' )
+                        span(class="ui-button-text")
+                          = affiliations[a].Name
+                      br
+  script(type='text/javascript').
+    $(document).ready( function() {
+      $( "#radioset" ).buttonset(); 
+    });
+
+              

@@ -3,10 +3,9 @@ html
   head
     title= title
     link(href='/css/pepper-grinder/jquery-ui-1.10.4.custom.css' rel='stylesheet')
-    link(href='/js/jquery.tablesorter/themes/blue/style.css' rel='stylesheet')
     script(src='/js/jquery-1.10.2.js')
     script(src='/js/jquery-ui-1.10.4.custom.js')
-    script(src='/js/jquery.tablesorter/jquery.tablesorter.js')
+    script(src='/js/jquery.dataTables.js')
     
   body
     
@@ -51,107 +50,9 @@ html
         }
         
     block content
-        
-    div(id= 'foot')
+
+    h3    
+      div(id= 'foot')
         a(href= '/login/' ) Log in
 
-    script.
-      $(function() {
-
  
-        $( "#accordion" ).accordion();
-        
-        var availableTags = [
-            "ActionScript",
-            "AppleScript",
-            "Asp",
-            "BASIC",
-            "C",
-            "C++",
-            "Clojure",
-            "COBOL",
-            "ColdFusion",
-            "Erlang",
-            "Fortran",
-            "Groovy",
-            "Haskell",
-            "Java",
-            "JavaScript",
-            "Lisp",
-            "Perl",
-            "PHP",
-            "Python",
-            "Ruby",
-            "Scala",
-            "Scheme"
-        ];
-        $( "#autocomplete" ).autocomplete({
-            source: availableTags
-        });
-        
-
-        
-        $( "#button" ).button();
-        $( "#radioset" ).buttonset();
-        
-
-        
-        $( "#tabs" ).tabs();
-        
-
-        
-        $( "#dialog" ).dialog({
-            autoOpen: false,
-            width: 400,
-            buttons: [
-            {
-                text: "Ok",
-                click: function() {
-                $( this ).dialog( "close" );
-                }
-            },
-            {
-                text: "Cancel",
-                click: function() {
-                $( this ).dialog( "close" );
-                }
-            }
-            ]
-        });
-
-        // Link to open the dialog
-        $( "#dialog-link" ).click(function( event ) {
-            $( "#dialog" ).dialog( "open" );
-            event.preventDefault();
-        });
-        
-
-        
-        $( "#datepicker" ).datepicker({
-            inline: true
-        });
-        
-
-        
-        $( "#slider" ).slider({
-            range: true,
-            values: [ 17, 67 ]
-        });
-        
-
-        
-        $( "#progressbar" ).progressbar({
-            value: 20
-        });
-        
-
-        // Hover states on the static widgets
-        $( "#dialog-link, #icons li" ).hover(
-            function() {
-            $( this ).addClass( "ui-state-hover" );
-            },
-            function() {
-            $( this ).removeClass( "ui-state-hover" );
-            }
-        );
-        });

@@ -130,6 +130,7 @@ if ('development' == app.get('env')) {
 app.get('/', routes.index);
 app.get('/users', user.list);
 
+
 // GET /login
 // we're using a local implementation (rather than OAuth)
 // https://github.com/jaredhanson/passport-local/blob/master/examples/login/app.js
@@ -162,6 +163,9 @@ app.get('/logout', function(req, res) {
 
 //register the route to view a list of users
 app.get('/users/list', user.list);
+
+// id will be available as req.params.id;
+app.get('/users/edit/:id', user.edit);
 
 http.createServer(app).listen(app.get('port'), function() {
 	console.log('Express server listening on port ' + app.get('port'));
