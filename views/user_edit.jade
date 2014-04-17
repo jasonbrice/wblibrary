@@ -2,16 +2,16 @@ extends layout
 
 block content
 
+  div(class='container')
+        
+    - if(error)
+      p= error
 
-      
-  - if(error)
-    p= error
+    h3= title
   
-  h3= title
-  
-  h5
-  div.top
-    form.form-horizontal(method="post", id="save")
+    h5
+
+    form.form-vertical(method="post", id="save")
       fieldset
         label First Name: 
         input(type='text' id='FirstName' name='FirstName' value=users.FirstName)
@@ -25,14 +25,24 @@ block content
             input(type='radio' id=affiliations[a].Name name='AffiliationId'  value=affiliations[a].ID checked=users.AffiliationId==affiliations[a].ID)
             label(for=affiliations[a].Name)
               = affiliations[a].Name
+        label Status: 
+        div(id='radioset2')
+          input(type='radio' id='active_true' name='IsActive'  value='1' checked=users.IsActive)
+          label(for='active_true') Active
+          input(type='radio' id='active_false' name='IsActive'  value='0' checked=!users.IsActive)
+          label(for='active_false') Inactive              
       br
-      h4
+      h5
         button(id='save' type='submit' class='ui-button ui-widget ui-state-default ui-corner-all ui-button-button-text-only' role='button' aria-disabled='false')
           span(class='ui-button-text') &nbsp;Save Changes&nbsp; 
         button(id='save' type='submit' class='ui-button ui-widget ui-state-default ui-corner-all ui-button-button-text-only' role='button' aria-disabled='false')
           span(class='ui-button-text')         
             a(href='/users') &nbsp;Cancel&nbsp; 
           
-
-
+  script.
+    $(function() {
+      $( "#button" ).button();
+      $( "#radioset" ).buttonset();
+      $( "#radioset2" ).buttonset();
+    });
 

@@ -14,57 +14,55 @@ html
     link(rel='stylesheet', href='/bootstrap/css/bootstrap-responsive.min.css')    
 
     script.
-      $(function() {
-        $( "#button" ).button();
-        $( "#radioset" ).buttonset(); 
-      });
-      
       var btn = $.fn.button.noConflict() // reverts $.fn.button to jqueryui btn
       $.fn.btn = btn // assigns bootstrap button functionality to $.fn.btn
         
   body
     
     style.
-        body{
-                font: 62.5% "Trebuchet MS", sans-serif;
-                margin: 50px;
-        }
-        .demoHeaders {
-                margin-top: 2em;
-        }
-        #dialog-link {
-                padding: .4em 1em .4em 20px;
-                text-decoration: none;
-                position: relative;
-        }
-        #dialog-link span.ui-icon {
-                margin: 0 5px 0 0;
-                position: absolute;
-                left: .2em;
-                top: 50%;
-                margin-top: -8px;
-        }
-        #icons {
-                margin: 0;
-                padding: 0;
-        }
-        #icons li {
-                margin: 2px;
-                position: relative;
-                padding: 4px 0;
-                cursor: pointer;
-                float: left;
-                list-style: none;
-        }
-        #icons span.ui-icon {
-                float: left;
-                margin: 0 4px;
-        }
-        .fakewindowcontain .ui-widget-overlay {
-                position: absolute;
-        }
+      body {
+       padding-top: 40px;
+       padding-bottom: 40px;
+      }
+      
+      .form-signin {
+       max-width: 330px;
+       padding: 15px;
+       margin: 0 auto;
+      }
+      .form-signin .form-signin-heading,
+      .form-signin .checkbox {
+       margin-bottom: 10px;
+      }
+      .form-signin .checkbox {
+       font-weight: normal;
+      }
+      .form-signin .form-control {
+       position: relative;
+       height: auto;
+       -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+                  box-sizing: border-box;
+       padding: 10px;
+       font-size: 16px;
+      }
+      .form-signin .form-control:focus {
+       z-index: 2;
+      }
+      .form-signin input[type="email"] {
+       margin-bottom: -1px;
+       border-bottom-right-radius: 0;
+       border-bottom-left-radius: 0;
+      }
+      .form-signin input[type="password"] {
+       margin-bottom: 10px;
+       border-top-left-radius: 0;
+       border-top-right-radius: 0;
+      }
     
-    img(src='/images/wblogo.png')
+    div(class='container')
+      h2(class='form-signin-heading')
+        img(src='/images/wblogo.png')
     
     block content
 
