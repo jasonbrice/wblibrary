@@ -56,6 +56,9 @@ exports.save = function(req, res){
 	console.log("Accessing: " + __filename);
 	
 	req.assert('FirstName','Please enter a first name').notEmpty();
+	req.assert('LastName','Please enter a last name').notEmpty();
+	req.assert('Email','Please enter a valid email address').notEmpty();
+	req.assert('AffiliationId','Please select an affiliation').notEmpty();
 	
 	errors = req.validationErrors();  
 	
@@ -67,7 +70,14 @@ exports.save = function(req, res){
 	}
 	else{
 		
-		var update = "update User set FirstName='" + req.body.FirstName + "' where ID=" + req.body.id + ";";
+		var update = "update User set"
+			+" FirstName='" + req.body.FirstName + "'"
+			+" ,LastName='" + req.body.LastName + "'"
+			+" ,Email='" + req.body.Email + "'"
+			+" ,AffiliationId=" + req.body.AffiliationId 
+			+" ,Updated=date('now')"
+			+" ,UpdatedBy=" + req.session.user.id
+			+ " where ID=" + req.body.id + ";";
 		
 		console.log('updating user with query: ' + update);
 		
