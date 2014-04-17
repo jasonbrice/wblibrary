@@ -1,33 +1,36 @@
 extends layout
 
 block content
-  h3= message
-  
-  if !user
-    button(id='login' type='submit' class='ui-button ui-widget ui-state-default ui-corner-all ui-button-button-text-only' role='button' aria-disabled='false')
-      span(class='ui-button-text')
-        a(href='/login')
-          &nbsp;Log In Page&nbsp; 
-  else
-    ul(id='menu' style='width:150px' class='ui-menu ui-widget ui-widget-content ui-corner-all')
-    
-      li(class='ui-menu-item' role='presentation')
-        button(id='entries' style='width:148px' class='ui-button ui-widget ui-state-default ui-corner-all ui-button-button-text-only' role='button' aria-disabled='false')
-          span(class='ui-button-text')
-            a(href='/entries') Time Entries
 
-      li(class='ui-menu-item' role='presentation')
-        button(id='login' style='width:148px' type='submit' class='ui-button ui-widget ui-state-default ui-corner-all ui-button-button-text-only' role='button' aria-disabled='false')
-          span(class='ui-button-text')
-            a(href='/logout') Log Out
-              
-      if user.IsAdmin
+  div(class='container')
+    h3= message
+  
+    if !user
+      button(id='login' type='submit' class='ui-button ui-widget ui-state-default ui-corner-all ui-button-button-text-only' role='button' aria-disabled='false')
+        span(class='ui-button-text')
+          a(href='/login')
+            &nbsp;Log In Page&nbsp; 
+    else
+      ul(id='menu' style='width:150px' class='ui-menu ui-widget ui-widget-content ui-corner-all')
+    
+        li(class='ui-menu-item' role='presentation')
+          button(id='entries' style='width:148px' class='ui-button ui-widget ui-state-default ui-corner-all ui-button-button-text-only' role='button' aria-disabled='false')
+            span(class='ui-button-text')
+              a(href='/entries') Time Entries
+        
         li(class='ui-menu-item' role='presentation')
           button(id='login' style='width:148px' type='submit' class='ui-button ui-widget ui-state-default ui-corner-all ui-button-button-text-only' role='button' aria-disabled='false')
             span(class='ui-button-text')
-              a(href='/users') User List
-      else
-        p You are not an admin
+              a(href='/logout') Log Out
+
+                      
+        if user.IsAdmin
+          li(class='ui-menu-item' role='presentation')
+            button(id='login' style='width:148px' type='submit' class='ui-button ui-widget ui-state-default ui-corner-all ui-button-button-text-only' role='button' aria-disabled='false')
+              span(class='ui-button-text')
+                a(href='/users') User List
+        else
+          p You are not an admin
                   
   script.
     $(function() { 

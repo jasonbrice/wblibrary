@@ -3,8 +3,8 @@ extends layout
 block content
   h1= title
   
-  div.top
-    form.form-horizontal(method="post", id="login")
+  div(class='container')
+    form.form-vertical(method="post", id="login")
       label Email: 
       input(type='text',name='username',id='username', value=username)
       label Password:

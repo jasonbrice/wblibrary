@@ -6,7 +6,13 @@ var routes = require('./routes');
 var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
-var express = require('express'), passport = require('passport'), flash = require('connect-flash'), LocalStrategy = require('passport-local').Strategy;
+
+var express = require('express') 
+, expressValidator = require('express-validator')
+, passport = require('passport')
+, flash = require('connect-flash')
+, LocalStrategy = require('passport-local').Strategy;
+
 var sqlite3 = require('sqlite3').verbose();
 var sha1 = require('sha1');
 var users= [{}];
@@ -124,6 +130,7 @@ app.set('view engine', 'jade');
 app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.bodyParser());
+app.use(expressValidator());
 app.use(express.methodOverride());
 app.use(express.static(path.join(__dirname, 'public')));/* app.use(express.static('public')); */
 app.use(express.cookieParser());
@@ -181,6 +188,8 @@ app.get('/users/list', user.list);
 
 // id will be available as req.params.id;
 app.get('/users/edit/:id', user.edit);
+app.post('/users/edit', user.save);
+app.post('/users/edit/:id', user.save);
 
 http.createServer(app).listen(app.get('port'), function() {
 	console.log('Express server listening on port ' + app.get('port'));

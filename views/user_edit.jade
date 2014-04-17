@@ -3,9 +3,6 @@ extends layout
 block content
 
   div(class='container')
-        
-    - if(error)
-      p= error
 
     h3= title
   
@@ -13,6 +10,7 @@ block content
 
     form.form-vertical(method="post", id="save")
       fieldset
+        input(type='hidden' id='id' name='id' value=users.ID)
         label First Name: 
         input(type='text' id='FirstName' name='FirstName' value=users.FirstName)
         label Last Name:
@@ -32,12 +30,19 @@ block content
           input(type='radio' id='active_false' name='IsActive'  value='0' checked=!users.IsActive)
           label(for='active_false') Inactive              
       br
-      h5
+      h4
         button(id='save' type='submit' class='ui-button ui-widget ui-state-default ui-corner-all ui-button-button-text-only' role='button' aria-disabled='false')
           span(class='ui-button-text') &nbsp;Save Changes&nbsp; 
         button(id='save' type='submit' class='ui-button ui-widget ui-state-default ui-corner-all ui-button-button-text-only' role='button' aria-disabled='false')
           span(class='ui-button-text')         
             a(href='/users') &nbsp;Cancel&nbsp; 
+      h5
+        if errors
+          div(class="ui-state-error ui-corner-all" style="padding: 0 .7em; width:250px; ")
+            p  Oops!
+              span(class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;")
+                - each error in errors
+                  li= error.msg            
           
   script.
     $(function() {

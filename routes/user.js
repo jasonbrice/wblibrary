@@ -1,9 +1,10 @@
 
 var path = require('path');
 var sqlite3 = require('sqlite3').verbose();
+var expressValidator = require("express-validator");
 
 var users = null;
-var error = null;
+var errors;
 var title = null;
 var affiliations = null;
 
@@ -50,6 +51,46 @@ exports.list = function(req, res){
 	
 };
 
+exports.save = function(req, res){
+	
+	console.log("Accessing: " + __filename);
+	
+	req.assert('FirstName','Please enter a first name').notEmpty();
+	
+	errors = req.validationErrors();  
+	
+	if(errors){
+		
+		errors.forEach(function(error){ console.log('Error! ' + error.msg);});
+		
+		exports.edit(req, res, {errors: errors});
+	}
+	else{
+		
+		var update = "update User set FirstName='" + req.body.FirstName + "' where ID=" + req.body.id + ";";
+		
+		console.log('updating user with query: ' + update);
+		
+		db = new sqlite3.Database( dbpath, function(err) {
+			if (err){
+				console.log(err);
+				exports.edit(req, res, {errors: err});
+			}
+		});
+		
+		db.serialize(function(){
+			db.run(update, function(err) {
+	            if (err) throw err;
+	            process.nextTick(function() {
+	            	db.close();
+	    			return exports.list(req, res);    	
+	            });			
+		});
+		
+	});
+	}
+}; 
+
 exports.edit = function(req, res){
 	
 	console.log("Accessing: " + __filename);
@@ -63,7 +104,7 @@ exports.edit = function(req, res){
 	
 	readUserRow(req, res);
 	
-}
+}; 
 
 
 function readUserRow(req, res){
@@ -100,12 +141,12 @@ function readAffiliationRows(req, res){
 	db.all(query, function(err, rows) {
 		affiliations = rows;        
         console.log("Found: " + rows.length + " affiliations");
-        renderAndClose(req, res);
+        renderUserAndClose(req, res);
     });
 }
 
 
-function renderAndClose(req, res){
+function renderUserAndClose(req, res){
 	
 	title =  "Viewing " + users.FirstName + " " + users.LastName;
 	
@@ -113,7 +154,7 @@ function renderAndClose(req, res){
 	
 	db.close();
 	
-	res.render('user_edit', {title: title, users: users, affiliations: affiliations});
+	res.render('user_edit', {title: title, users: users, affiliations: affiliations, errors: errors});
 	 
     
 }
