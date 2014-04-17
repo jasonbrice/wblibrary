@@ -4,5 +4,9 @@
  */
 
 exports.index = function(req, res){
-  res.render('index', { title: 'Westbank Community Library Volunteer Time Tracker' });
+	
+	var title = 'Westbank Community Library Time Tracker';
+	var message = req.session.user ? 'Welcome, ' + req.session.user.firstname + '!' : 'Welcome! Please log in to continue.';
+	res.render('index', { title: title, message: message, user: req.session.user });
+	
 };

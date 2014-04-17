@@ -60,7 +60,11 @@ passport.use(new LocalStrategy( function(username, password, done) {
 		}
 	});
 
-	var query = "select ID, FirstName, LastName, Email, Password, IsActive from User where lower(Email)='" + username.toLowerCase().trim() + "';";
+	var query = "select u.ID, u.FirstName, u.LastName, u.Email, u.Password, u.IsActive, r.ID as IsAdmin "
+		 + " from User u "
+		 + " left outer join UserRole ur on u.ID=ur.UserID "
+		 + " left join Role r on ur.RoleID=r.ID and r.Name='Admin' "
+		 + " where lower(u.Email)='" + username.toLowerCase().trim() + "';";
 
 	console.log("querying " + path.resolve(dbpath) + " with: " + query);
 
@@ -71,8 +75,17 @@ passport.use(new LocalStrategy( function(username, password, done) {
 			return done(null,false, {message : 'Database problem: ' + err});
 		}
 		if (row) {
-			var user = { id : row.ID, username : row.Email, password : row.Password, email : row.Email };
-
+						
+			
+			var user = { id : row.ID, username : row.Email, password : row.Password, email : row.Email, firstname: row.FirstName, lastname: row.LastName };
+            
+			if(row.IsAdmin == null){
+				user.IsAdmin = false;
+			}
+			else{
+				user.IsAdmin = true;
+			}
+			
 			
 			if (user.password === sha1(password)) 
 			{
@@ -153,10 +166,12 @@ app.post('/login', passport.authenticate('local', {
 	failureFlash : true
 }), function(req, res) {
 	console.log('login success, redirecting to root');
+	req.session.user = req.user;
 	res.redirect('/');
 });
 
 app.get('/logout', function(req, res) {
+	req.session.user = null;
 	req.logout();
 	res.redirect('/');
 });

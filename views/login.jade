@@ -3,19 +3,16 @@ extends layout
 block content
   h1= title
   
-  form(method='post' name='login')
-    div
-      h2(class='demoHeaders') Email: 
-        input(type='text',name='username',id='username', value=username)
-    
-    div
-      h2(class='demoHeaders') Password:
-        input(type='password',name='password',id='password')
-    
-    div
-      button(id='login' class='ui-button ui-widget ui-state-default ui-corner-all ui-button-button-text-only' role='button' aria-disabled='false')
-        span(class='ui-button-text') Log In 
+  div.top
+    form.form-horizontal(method="post", id="login")
+      label Email: 
+      input(type='text',name='username',id='username', value=username)
+      label Password:
+      input(type='password',name='password',id='password')
+      label 
+      button(id='login' type='submit' class='ui-button ui-widget ui-state-default ui-corner-all ui-button-button-text-only' role='button' aria-disabled='false')
+        span(class='ui-button-text') &nbsp;Log In&nbsp; 
            
       
-    div
-      p= message
+  div
+    p= message
