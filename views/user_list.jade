@@ -11,25 +11,25 @@ block content
         thead
           tr(style='font-weight:bold;')
             th Edit
-            th First
-            th Last
+            th Name
             th Email
             th Affiliation
             th Status
             th Created
             th Updated
+            th Updated By
         tbody
           - for (var r in users)
             tr
               td
                 a(href= '/users/edit/' + users[r].ID) Edit
-              td= users[r].FirstName
-              td= users[r].LastName
+              td= users[r].Name
               td= users[r].Email
               td= users[r].Affiliation
-              td= users[r].IsActive
+              td= users[r].Status
               td= users[r].Created
               td= users[r].Updated
+              td= users[r].UpdatedByName
   
   script(type='text/javascript').
     $(document).ready( function() { $('#tablesorter-users').dataTable( { "bJQueryUI": true } ); } );

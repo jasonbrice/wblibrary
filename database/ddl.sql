@@ -4,6 +4,20 @@
 /* =======                                                                                                                        ========= */
 /* =======                                                              C:\SomeDirectory>sqlite3 db.sqlite < ddl.sql              ========= */
 /* =======                                                               ^^ directory ^^          ^ db ^     ^ file^              ========= */
+/* =======                                                                                                                        ========= */
+/* =======                                                                                                                        ========= */
+/* ======= You can perform standard queries on the database by opening a command line session:                                    ==========*/
+/* =======                                                                               C:\SomeDirectory>sqlite3 db.sqlite       ========= */
+/* ======= Or, use a free GUI tool like sqliteexpert: http://www.sqliteexpert.com/                                                ========= */
+/* =======                                                                                                                        ========= */
+/* =======                                                                                                                        ========= */
+/* =======                             WARNING | WARNING | WARNING | WARNING!!                                                    ========= */
+/* =======                              RUNNING THIS SCRIPT WILL DELETE ALL                                                       ========= */
+/* =======                              DATA IN YOUR DATABASE. MAKE SURE YOU                                                      ========= */
+/* =======                             HAVE A BACKUP IF YOU WANT TO KEEP ANY                                                      ========= */
+/* =======                                   EXISTING DATA                                                                        ========= */
+/* =======                                                                                                                        ========= */
+/* ======================================================================================================================================== */
 
 /** General environment settings *****************************************************/
 
@@ -12,7 +26,9 @@ PRAGMA foreign_keys = ON; -- this one is *really* important for referential inte
 
 /*************************************************************************************/
 
+
 drop table if exists TimeEntry;
+drop table if exists ApprovalStatus;
 drop table if exists UserRole;
 drop table if exists User;
 drop table if exists Role;
@@ -111,42 +127,99 @@ create index if not exists idx_fk_UserRole_Role on UserRole(RoleID);
 	
 
 
-	
-/**	TimeEntry table *************************************************************
-	_____
+/*********	ApprovalStatus table  *************************************************************
+	____
 	|ID				|primary key int not null
-	|UserID			|foreign key int constrained to User table ID
-	|Hours			|double not null default 0.0
-	|Created		|Date/Time initial record creation
-	|CreatedBy		|foreign key int constrained to User table ID
-	|Updated		|Date/Time most recent record update
-	|UpdatedBy		|foreign key int constrained to User table ID
+	|Name			|text - name of status (Pending, Approved, Cancelled)
 
 *************************************************************************************/
 
+
+create table if not exists ApprovalStatus(
+	ID integer primary key asc,
+	Name text
+);
+
+drop index if exists idx_ApprovalStatus_Name;
+create index if not exists idx_ApprovalStatus_Name on ApprovalStatus(Name); 
+
+	
+/**	TimeEntry table *************************************************************
+	_____
+	|ID					|primary key int not null
+	|UserID				|foreign key int constrained to User table ID
+	|Hours				|double not null default 0.0
+	|Created			|Date/Time initial record creation
+	|CreatedBy			|foreign key int constrained to User table ID
+	|Updated			|Date/Time most recent record update
+	|UpdatedBy			|foreign key int constrained to User table ID
+	|ApprovalStatusID	| foreign key int constrained to ApprovalStatus table ID
+
+*************************************************************************************/
 
 
 create table if not exists TimeEntry(
 	ID integer primary key asc,
 	UserID integer,
 	Hours number,
+	DateOfWork DATETIME DEFAULT CURRENT_TIMESTAMP,
 	Comment text, 
 	Created DATETIME DEFAULT CURRENT_TIMESTAMP,
 	CreatedBy integer,
 	Updated DATETIME DEFAULT CURRENT_TIMESTAMP,
 	UpdatedBy integer,
+	ApprovalStatusID integer, 
 	FOREIGN KEY(UserID) REFERENCES User(Id),
 	FOREIGN KEY(CreatedBy) REFERENCES User(Id),
-	FOREIGN KEY(UpdatedBy) REFERENCES User(Id)
+	FOREIGN KEY(UpdatedBy) REFERENCES User(Id), 
+	FOREIGN KEY(ApprovalStatusID) REFERENCES ApprovalStatus(ID)
 );	
 
 drop index if exists idx_fk_TimeEntry_User;
 drop index if exists idx_fk_TimeEntry_Created;
 drop index if exists idx_fk_TimeEntry_UpdatedBy;
+drop index if exists idx_fk_TimeEntry_ApprovalStatus;
 
 create index if not exists idx_fk_TimeEntry_User on TimeEntry(UserID);
 create index if not exists idx_fk_TimeEntry_Created on TimeEntry(CreatedBy);
 create index if not exists idx_fk_TimeEntry_UpdatedBy on TimeEntry(UpdatedBy);
+create index if not exists idx_fk_TimeEntry_ApprovalStatus on TimeEntry(ApprovalStatusID); 
 
-	
-	
+
+
+/* ======================= VIEWS =========================================	 */
+
+
+drop view if exists TIMESHEETS;
+
+CREATE VIEW IF NOT EXISTS TIMESHEETS AS 
+   select t.ID, u.FirstName || ' ' || u.LastName as Name,
+   t.Hours, t.DateOfWork, 
+   t.Comment, t.Created, t.Updated, u2.FirstName || ' ' || u2.LastName as CreatedByName, 
+   u3.FirstName || ' ' || u3.LastName as UpdatedByName, a.Name as ApprovalStatus, 
+   case when af.Name is null then 'None' else af.Name end as Affiliation, 
+   u.ID as UserID, u2.ID as CreatedByID, u3.ID as UpdatedByID, af.ID as AffiliationID, 
+   a.ID as ApprovalStatusID
+   from TimeEntry t 
+   left outer join User u on t.UserID = u.ID
+   left outer join User u2 on t.CreatedBy = u2.ID
+   left outer join User u3 on t.UpdatedBy = u3.ID
+   left outer join Affiliation af on u.AffiliationID = af.ID
+   left outer join ApprovalStatus a on t.ApprovalStatusID = a.ID;
+   
+   
+   
+drop view if exists USERS;
+
+CREATE VIEW IF NOT EXISTS USERS AS
+  select 
+  u.ID, u.FirstName, u.LastName, u.FirstName || ' ' || u.LastName as Name, 
+  u.Email, u.Created, u.Updated, u2.FirstName || ' ' || u2.LastName as UpdatedByName, 
+  case when u.IsActive=1 then 'Active' else 'Inactive' end as Status, 
+  case when a.Name is null then 'None' else a.Name end as Affiliation
+  
+  from User u
+  left outer join User u2 on u.UpdatedBy = u2.ID
+  left outer join Affiliation a on u.AffiliationID = a.Id;
+  
+ 

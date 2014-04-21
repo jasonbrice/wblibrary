@@ -4,6 +4,7 @@
 
 var routes = require('./routes');
 var user = require('./routes/user');
+var timesheet = require('./routes/timesheet');
 var http = require('http');
 var path = require('path');
 
@@ -190,6 +191,11 @@ app.get('/users/list', user.list);
 app.get('/users/edit/:id', user.edit);
 app.post('/users/edit', user.save);
 app.post('/users/edit/:id', user.save);
+
+
+app.get('/timesheets', timesheet.list);
+app.get('/timesheets/edit/:id', timesheet.edit);
+app.post('/timsheets/edit/:id', timesheet.save);
 
 http.createServer(app).listen(app.get('port'), function() {
 	console.log('Express server listening on port ' + app.get('port'));

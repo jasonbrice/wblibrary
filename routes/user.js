@@ -25,7 +25,7 @@ exports.list = function(req, res){
 		}
 	});
 
-	var query = "select u.ID, u.FirstName, u.LastName, u.Email, u.Created, u.Updated, case when u.IsActive then 'Active' else 'Inactive' end as IsActive, a.Name as Affiliation from User u left outer join Affiliation a on AffiliationID=a.ID where u.IsActive=1;";
+	var query = "select * from USERS;"; //u.ID, u.FirstName, u.LastName, u.Email, u.Created, u.Updated, case when u.IsActive then 'Active' else 'Inactive' end as IsActive, a.Name as Affiliation from User u left outer join Affiliation a on AffiliationID=a.ID where u.IsActive=1;";
 
 	console.log("querying " + path.resolve(dbpath) + " with: " + query);
 	
