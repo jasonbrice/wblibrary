@@ -1,0 +1,42 @@
+extends layout
+
+block content
+  
+  - if(error)
+    p= error
+  
+  div(class='container')
+    h5
+      table(width='100%' id="tablesorter-timesheets" class="display" )
+        thead
+          tr(style='font-weight:bold;')
+            th Edit
+            th Name
+            th Affiliation
+            th Date of Work
+            th Comments
+            th Status
+            th Created
+            th Created By
+            th Updated
+            th Updated By
+        tbody
+          - for (var r in timesheets)
+            tr
+              td
+                a(href= '/timesheets/edit/' + timesheets[r].ID) Edit
+              td= timesheets[r].Name
+              td= timesheets[r].Affiliation
+              td= timesheets[r].DateOfWork
+              td= timesheets[r].Comment
+              td= timesheets[r].ApprovalStatus
+              td= timesheets[r].Created
+              td= timesheets[r].CreatedByName
+              td= timesheets[r].Updated
+              td= timesheets[r].UpdatedByName
+  
+  script(type='text/javascript').
+    $(document).ready( function() { $('#tablesorter-timesheets').dataTable( { "bJQueryUI": true } ); } );
+
+  
+    

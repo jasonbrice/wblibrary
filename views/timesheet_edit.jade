@@ -1,0 +1,44 @@
+extends layout
+
+block content
+
+  div(class='container')
+
+    h3= title
+  
+    h5
+
+    form.form-vertical(method="post", id="save")
+      fieldset
+        input(type='hidden' id='id' name='id' value=timesheet.ID)
+        label Date: 
+        input(id='DateOfWork' name='DateOfWork' value=timesheet.DateOfWork)
+        label Hours:
+        input(type='text' id='Hours' name='Hours' value=timesheet.Hours)
+        label Comment:
+        textarea(id='Comment' rows="5" name='Comment')
+          =timesheet.Comment      
+        
+      br
+      h4
+        button(id='save' type='submit' class='ui-button ui-widget ui-state-default ui-corner-all ui-button-button-text-only' role='button' aria-disabled='false')
+          span(class='ui-button-text') &nbsp;Save Changes&nbsp; 
+        button(id='save' type='submit' class='ui-button ui-widget ui-state-default ui-corner-all ui-button-button-text-only' role='button' aria-disabled='false')
+          span(class='ui-button-text')         
+            a(href='  imesheet') &nbsp;Cancel&nbsp; 
+      h5
+        if errors
+          div(class="ui-state-error ui-corner-all" style="padding: 0 .7em; width:250px; ")
+            p  Oops!
+              span(class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;")
+                - each error in errors
+                  li= error.msg            
+          
+  script.
+    $(function() {
+      $( "#button" ).button();
+      $( "#DateOfWork" ).datepicker({
+        inline: true
+       });
+    });
+

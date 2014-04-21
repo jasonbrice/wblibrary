@@ -8,6 +8,7 @@
 --.echo ON -- turn this off it you want the data insertion to run silently
 
 /* set up affiliations */
+delete from Affiliation where 1=1;
 insert into Affiliation(Name) values( 'NJHS' );
 insert into Affiliation(Name) values( 'NHS' );
 insert into Affiliation(Name) values( 'CHAPS' );
@@ -16,6 +17,9 @@ insert into Affiliation(Name) values( 'Other' );
 
 /* initial values for user table. NB that only the root admin user specifies the primary key, all others
    get assigned values by the database engine.   */
+   
+delete from User where 1=1;
+   
 insert into User(ID, FirstName, LastName, UpdatedBy, IsActive) values(1, 'Westbank', 'Admin', 1, 1);
 
 /* password is sha1 hash of "HothIsCold" */
@@ -28,13 +32,20 @@ insert into User(FirstName, LastName, Email, Password, UpdatedBy, IsActive) valu
 insert into User(FirstName, LastName, Email, Password, UpdatedBy, IsActive) values('Chris', 'Brailas', 'chris@westbanklibrary.com', '74bce0eac8ca620063ca4ae0692d3321be84a981', 1, 1);	
 
 /* initial values for Role table */
+delete from Role where 1=1;
 insert into Role(ID, Name) values(1, 'Admin');
 insert into Role(ID, Name) values(2, 'Volunteer');
 insert into Role(ID, Name) values(3, 'Student Volunteer');
 
 /* initial values for UserRole resolution table */
+delete from UserRole where 1=1;
 insert into UserRole(UserID, RoleID) values( (select ID from User where FirstName='Jason' and LastName='Brice'), (select ID from Role where Name='Admin'));
 insert into UserRole(UserID, RoleID) values( (select ID from User where FirstName='Mary' and LastName='Williams'), (select ID from Role where Name='Admin'));
 insert into UserRole(UserID, RoleID) values( (select ID from User where FirstName='Chris' and LastName='Brailas'), (select ID from Role where Name='Admin'));
 
-;
+/* initial values for ApprovalStatus table */
+delete from ApprovalStatus where 1=1;
+insert into ApprovalStatus(ID, Name) values(1, 'Pending');
+insert into ApprovalStatus(ID, Name) values(2, 'Approved');
+insert into ApprovalStatus(ID, Name) values(3, 'Cancelled');
+
