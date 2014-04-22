@@ -8,6 +8,11 @@
   "dependencies": {
     "express": "3.3.7",
     "jade": "*", 
-    "sqlite3" : "*"
+    "sqlite3" : "*", 
+    "passport" : "0.2.0", 
+    "passport-local" : "1.0.0", 
+    "sha1" : "1.1.0", 
+    "mocha" : "1.18.2", 
+    "connect-flash" : "0.1.1"
   }
 }
