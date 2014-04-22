@@ -67,7 +67,7 @@ passport.use(new LocalStrategy( function(username, password, done) {
 		}
 	});
 
-	var query = "select u.ID, u.FirstName, u.LastName, u.Email, u.Password, u.IsActive, r.ID as IsAdmin "
+	var query = "select u.ID, u.FirstName, u.LastName, u.Email, u.Password, u.IsActive, case when r.ID is null then 0 else r.ID end as IsAdmin "
 		 + " from User u "
 		 + " left outer join UserRole ur on u.ID=ur.UserID "
 		 + " left join Role r on ur.RoleID=r.ID and r.Name='Admin' "
@@ -86,7 +86,7 @@ passport.use(new LocalStrategy( function(username, password, done) {
 			
 			var user = { id : row.ID, username : row.Email, password : row.Password, email : row.Email, firstname: row.FirstName, lastname: row.LastName };
             
-			if(row.IsAdmin == null){
+			if(row.IsAdmin == 0){
 				user.IsAdmin = false;
 			}
 			else{
@@ -186,11 +186,13 @@ app.get('/logout', function(req, res) {
 
 //register the route to view a list of users
 app.get('/users/list', user.list);
+app.get('/users/edit', ensureAuthenticated, user.list);
 
 // id will be available as req.params.id;
-app.get('/users/edit/:id', user.edit);
-app.post('/users/edit', user.save);
-app.post('/users/edit/:id', user.save);
+app.get('/users/edit/:id', ensureAuthenticated, user.edit);
+app.post('/users/edit', ensureAuthenticated, user.save);
+app.get('/users/create', ensureAuthenticated, user.edit);
+app.post('/users/edit/:id', ensureAuthenticated, user.save);
 
 
 app.get('/timesheets', timesheet.list);

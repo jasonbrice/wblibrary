@@ -31,6 +31,13 @@ insert into User(FirstName, LastName, Email, Password, UpdatedBy, IsActive) valu
 /* password is sha1 hash of "XwingsAreFast" */
 insert into User(FirstName, LastName, Email, Password, UpdatedBy, IsActive) values('Chris', 'Brailas', 'chris@westbanklibrary.com', '74bce0eac8ca620063ca4ae0692d3321be84a981', 1, 1);	
 
+/* password is sha1 hash of "WookiesSmellBad" */
+insert into User(FirstName, LastName, Email, Password, UpdatedBy, IsActive, AffiliationID) values('Volunteer', 'Test', 'volunteer@test.com', 'c70b6a4f740270880204fbee9c15da5e95211c62', 1, 1, (select ID from Affiliation where name='CHAPS'));	
+
+/* password is sha1 hash of "PadawansAreSmall" */
+insert into User(FirstName, LastName, Email, Password, UpdatedBy, IsActive) values('Student', 'Volunteer', 'student@test.com', '7eb7ab06e914b0280752a120fbb6d9378c7dd8e0', 1, 1, (select ID from Affiliation where name='NJHS'));	
+
+
 /* initial values for Role table */
 delete from Role where 1=1;
 insert into Role(ID, Name) values(1, 'Admin');
@@ -49,3 +56,119 @@ insert into ApprovalStatus(ID, Name) values(1, 'Pending');
 insert into ApprovalStatus(ID, Name) values(2, 'Approved');
 insert into ApprovalStatus(ID, Name) values(3, 'Cancelled');
 
+
+/* test values for timesheet... !!! DELETE !!! when ready for production */
+
+insert into timeentry(UserID, Hours, DateOfWork, Comment, CreatedBy, Updated, UpdatedBy, ApprovalStatusID) 
+  values(
+          (select ID from User where Email='student@test.com'), 5, '2014-04-11', 'Friday''s work', 
+          (select ID from User where Email='student@test.com'), '2014-04-11 10:00:00', (select ID from User where Email='student@test.com'), 
+		  (select ID from ApprovalStatus where Name='Pending')
+		);
+
+insert into timeentry(UserID, Hours, DateOfWork, Comment, CreatedBy, Updated, UpdatedBy, ApprovalStatusID) 
+  values(
+          (select ID from User where Email='student@test.com'), 5, '2014-04-12', 'Saturday!', 
+          (select ID from User where Email='student@test.com'), '2014-04-12 10:00:00', (select ID from User where Email='student@test.com'), 
+		  (select ID from ApprovalStatus where Name='Pending')
+		);
+
+insert into timeentry(UserID, Hours, DateOfWork, Comment, CreatedBy, Updated, UpdatedBy, ApprovalStatusID) 
+  values(
+          (select ID from User where Email='student@test.com'), 5, '2014-04-13', 'Every day''s like Sunday...', 
+          (select ID from User where Email='student@test.com'), '2014-04-12 10:00:00', (select ID from User where Email='student@test.com'), 
+		  (select ID from ApprovalStatus where Name='Pending')
+		);
+
+insert into timeentry(UserID, Hours, DateOfWork, Comment, CreatedBy, Updated, UpdatedBy, ApprovalStatusID) 
+  values(
+          (select ID from User where Email='student@test.com'), 5, '2014-04-14', 'Monday Monday', 
+          (select ID from User where Email='student@test.com'), '2014-04-13 10:00:00', (select ID from User where Email='student@test.com'), 
+		  (select ID from ApprovalStatus where Name='Pending')
+		);
+
+
+insert into timeentry(UserID, Hours, DateOfWork, Comment, CreatedBy, Updated, UpdatedBy, ApprovalStatusID) 
+  values(
+          (select ID from User where Email='student@test.com'), 5, '2014-04-15', 'THIS WAS HARD WORK', 
+          (select ID from User where Email='student@test.com'), '2014-04-15 10:00:00', (select ID from User where Email='student@test.com'), 
+		  (select ID from ApprovalStatus where Name='Pending')
+		);
+
+insert into timeentry(UserID, Hours, DateOfWork, Comment, CreatedBy, Updated, UpdatedBy, ApprovalStatusID) 
+  values(
+          (select ID from User where Email='student@test.com'), 4, '2014-04-16', 'Have I won the lottery yet?', 
+          (select ID from User where Email='student@test.com'), '2014-04-16 10:00:00', (select ID from User where Email='student@test.com'), 
+		  (select ID from ApprovalStatus where Name='Pending')
+		);
+
+insert into timeentry(UserID, Hours, DateOfWork, Comment, CreatedBy, Updated, UpdatedBy, ApprovalStatusID) 
+  values(
+          (select ID from User where Email='student@test.com'), 5, '2014-04-17', 'I feel so... erudite!', 
+          (select ID from User where Email='student@test.com'), '2014-04-17 10:00:00', (select ID from User where Email='mary@westbanklibrary.com'), 
+		  (select ID from ApprovalStatus where Name='Approved')
+		);
+
+insert into timeentry(UserID, Hours, DateOfWork, Comment, CreatedBy, Updated, UpdatedBy, ApprovalStatusID) 
+  values(
+          (select ID from User where Email='student@test.com'), 5, '2014-04-17', 'Oops, this is a duplicate.', 
+          (select ID from User where Email='student@test.com'), '2014-04-17 10:00:00', (select ID from User where Email='mary@westbanklibrary.com'), 
+		  (select ID from ApprovalStatus where Name='Cancelled')
+		);
+
+insert into timeentry(UserID, Hours, DateOfWork, Comment, CreatedBy, Updated, UpdatedBy, ApprovalStatusID) 
+  values(
+          (select ID from User where Email='volunteer@test.com'), 5, '2014-04-11', 'Hooray it''s FRIDAY', 
+          (select ID from User where Email='volunteer@test.com'), '2014-04-11 10:00:00', (select ID from User where Email='volunteer@test.com'), 
+		  (select ID from ApprovalStatus where Name='Pending')
+		);
+
+insert into timeentry(UserID, Hours, DateOfWork, Comment, CreatedBy, Updated, UpdatedBy, ApprovalStatusID) 
+  values(
+          (select ID from User where Email='volunteer@test.com'), 5, '2014-04-12', 'Caturday?', 
+          (select ID from User where Email='volunteer@test.com'), '2014-04-12 10:00:00', (select ID from User where Email='volunteer@test.com'), 
+		  (select ID from ApprovalStatus where Name='Pending')
+		);
+
+insert into timeentry(UserID, Hours, DateOfWork, Comment, CreatedBy, Updated, UpdatedBy, ApprovalStatusID) 
+  values(
+          (select ID from User where Email='volunteer@test.com'), 5, '2014-04-13', 'Sunny day Sunday', 
+          (select ID from User where Email='volunteer@test.com'), '2014-04-12 10:00:00', (select ID from User where Email='volunteer@test.com'), 
+		  (select ID from ApprovalStatus where Name='Pending')
+		);
+
+insert into timeentry(UserID, Hours, DateOfWork, Comment, CreatedBy, Updated, UpdatedBy, ApprovalStatusID) 
+  values(
+          (select ID from User where Email='volunteer@test.com'), 5, '2014-04-14', 'Money day Monday?', 
+          (select ID from User where Email='volunteer@test.com'), '2014-04-13 10:00:00', (select ID from User where Email='volunteer@test.com'), 
+		  (select ID from ApprovalStatus where Name='Pending')
+		);
+
+
+insert into timeentry(UserID, Hours, DateOfWork, Comment, CreatedBy, Updated, UpdatedBy, ApprovalStatusID) 
+  values(
+          (select ID from User where Email='volunteer@test.com'), 5, '2014-04-15', 'I CAN HAZ BOOKS?', 
+          (select ID from User where Email='volunteer@test.com'), '2014-04-15 10:00:00', (select ID from User where Email='volunteer@test.com'), 
+		  (select ID from ApprovalStatus where Name='Pending')
+		);
+
+insert into timeentry(UserID, Hours, DateOfWork, Comment, CreatedBy, Updated, UpdatedBy, ApprovalStatusID) 
+  values(
+          (select ID from User where Email='volunteer@test.com'), 4, '2014-04-16', 'Help me Dewy Decimal, you''re my only hope', 
+          (select ID from User where Email='volunteer@test.com'), '2014-04-16 10:00:00', (select ID from User where Email='volunteer@test.com'), 
+		  (select ID from ApprovalStatus where Name='Pending')
+		);
+
+insert into timeentry(UserID, Hours, DateOfWork, Comment, CreatedBy, Updated, UpdatedBy, ApprovalStatusID) 
+  values(
+          (select ID from User where Email='volunteer@test.com'), 5, '2014-04-17', 'Is that Mark Twain frozen in carbonite?', 
+          (select ID from User where Email='volunteer@test.com'), '2014-04-17 10:00:00', (select ID from User where Email='mary@westbanklibrary.com'), 
+		  (select ID from ApprovalStatus where Name='Approved')
+		);
+
+insert into timeentry(UserID, Hours, DateOfWork, Comment, CreatedBy, Updated, UpdatedBy, ApprovalStatusID) 
+  values(
+          (select ID from User where Email='volunteer@test.com'), 5, '2014-04-17', 'Oops, this is another duplicate.', 
+          (select ID from User where Email='volunteer@test.com'), '2014-04-17 10:00:00', (select ID from User where Email='mary@westbanklibrary.com'), 
+		  (select ID from ApprovalStatus where Name='Cancelled')
+		);

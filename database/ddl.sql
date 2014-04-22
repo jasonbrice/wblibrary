@@ -63,6 +63,7 @@ create index if not exists idx_Affiliation_Name on Affiliation(Name);
 	|Updated		|Date/Time
 	|UpdatedBy		|int not null (foreign key constrained to ID of user who updated)
 	|IsActive		|bool (inactive users will be retained for history but cannot login and do not show in reports)
+	|AffiliationID  |int (foreign key constrained to ID of Affiliation table)
 
 *************************************************************************************/
 
@@ -149,11 +150,13 @@ create index if not exists idx_ApprovalStatus_Name on ApprovalStatus(Name);
 	|ID					|primary key int not null
 	|UserID				|foreign key int constrained to User table ID
 	|Hours				|double not null default 0.0
+	|DateOfWork         |the actual day volunteer time occurred (may be different than entry date)
+	|Comment			|text - any notes about time
 	|Created			|Date/Time initial record creation
 	|CreatedBy			|foreign key int constrained to User table ID
 	|Updated			|Date/Time most recent record update
 	|UpdatedBy			|foreign key int constrained to User table ID
-	|ApprovalStatusID	| foreign key int constrained to ApprovalStatus table ID
+	|ApprovalStatusID	|foreign key int constrained to ApprovalStatus table ID
 
 *************************************************************************************/
 
@@ -192,10 +195,11 @@ create index if not exists idx_fk_TimeEntry_ApprovalStatus on TimeEntry(Approval
 
 drop view if exists TIMESHEETS;
 
+/* Flatten the normalized relationship between user/timesheet (and user/user), do some formatting on data */
 CREATE VIEW IF NOT EXISTS TIMESHEETS AS 
    select t.ID, u.FirstName || ' ' || u.LastName as Name,
-   t.Hours, t.DateOfWork, 
-   t.Comment, t.Created, t.Updated, u2.FirstName || ' ' || u2.LastName as CreatedByName, 
+   t.Hours, date(t.DateOfWork) as DateOfWork, 
+   t.Comment, t.Created, t.Updated as Updated, u2.FirstName || ' ' || u2.LastName as CreatedByName, 
    u3.FirstName || ' ' || u3.LastName as UpdatedByName, a.Name as ApprovalStatus, 
    case when af.Name is null then 'None' else af.Name end as Affiliation, 
    u.ID as UserID, u2.ID as CreatedByID, u3.ID as UpdatedByID, af.ID as AffiliationID, 
@@ -211,6 +215,7 @@ CREATE VIEW IF NOT EXISTS TIMESHEETS AS
    
 drop view if exists USERS;
 
+/* Flatten the normalized relationship between user/user, do some formatting on data */
 CREATE VIEW IF NOT EXISTS USERS AS
   select 
   u.ID, u.FirstName, u.LastName, u.FirstName || ' ' || u.LastName as Name, 

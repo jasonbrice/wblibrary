@@ -8,7 +8,7 @@ block content
   
     h5
 
-    form.form-vertical(method="post", id="save")
+    form.form-vertical(method="post", id="save" action='/users/edit')
       fieldset
         input(type='hidden' id='id' name='id' value=users.ID)
         label First Name: 
@@ -17,6 +17,12 @@ block content
         input(type='text' id='LastName' name='LastName' value=users.LastName)
         label Email Address:
         input(type='text' id='Email' name='Email' value=users.Email)      
+        if !users.ID
+          label Password:
+          input(type='password' id='Password' name='Password')
+        if users.ID && isAdmin
+          label Reset Password (leave blank to keep current password):
+          input(type='password' id='Password' name='Password')
         label Affiliation: 
         div(id='radioset')
           - for (var a in affiliations) 
@@ -38,7 +44,7 @@ block content
             a(href='/users') &nbsp;Cancel&nbsp; 
       h5
         if errors
-          div(class="ui-state-error ui-corner-all" style="padding: 0 .7em; width:250px; ")
+          div(class="ui-state-error ui-corner-all" style="padding: 0 .7em; width:255px; ")
             p  Oops!
               span(class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;")
                 - each error in errors

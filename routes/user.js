@@ -2,6 +2,7 @@
 var path = require('path');
 var sqlite3 = require('sqlite3').verbose();
 var expressValidator = require("express-validator");
+var sha1 = require('sha1');
 
 var users = null;
 var errors;
@@ -54,11 +55,13 @@ exports.list = function(req, res){
 exports.save = function(req, res){
 	
 	console.log("Accessing: " + __filename);
-	
+
 	req.assert('FirstName','Please enter a first name').notEmpty();
 	req.assert('LastName','Please enter a last name').notEmpty();
 	req.assert('Email','Please enter a valid email address').notEmpty();
 	req.assert('AffiliationId','Please select an affiliation').notEmpty();
+	
+	if(!req.body.id) req.assert('Password', 'Please create a password').notEmpty();
 	
 	errors = req.validationErrors();  
 	
@@ -70,17 +73,38 @@ exports.save = function(req, res){
 	}
 	else{
 		
-		var update = "update User set"
-			+" FirstName='" + req.body.FirstName + "'"
-			+" ,LastName='" + req.body.LastName + "'"
-			+" ,Email='" + req.body.Email + "'"
-			+" ,AffiliationId=" + req.body.AffiliationId 
-			+" ,Updated=date('now')"
-			+" ,UpdatedBy=" + req.session.user.id
-			+ " where ID=" + req.body.id + ";";
+		var sql;
 		
-		console.log('updating user with query: ' + update);
+		if(req.body.id){
 		
+			console.log('IsActive=' + req.body.IsActive);
+			
+			
+			sql = "update User set"
+				+" FirstName='" + req.body.FirstName + "'"
+				+" ,LastName='" + req.body.LastName + "'"
+				+" ,Email='" + req.body.Email + "'"
+				+" ,AffiliationId=" + req.body.AffiliationId 
+				+" ,Updated=date('now')"
+				+" ,UpdatedBy=" + req.session.user.id
+				+" ,IsActive=" + req.body.IsActive
+				+ " where ID=" + req.body.id + ";";
+			
+			console.log('updating user with query: ' + sql);
+		}
+		else{
+			sql = "insert into User(FirstName, LastName, Email, AffiliationId, Password, UpdatedBy, IsActive) values("
+			+"'" + req.body.FirstName + "'"
+			+" , '" + req.body.LastName + "'"
+			+" ,'" + req.body.Email + "'"
+			+" ," + req.body.AffiliationId 
+		    +" , '" + sha1(req.body.Password) + "'"
+			+" ," + req.session.user.id
+			+" ," +  (req.body.active_true ? 0 : 1)
+			+ ");"; 
+			
+			console.log('creating user with query: ' + sql);
+		}
 		db = new sqlite3.Database( dbpath, function(err) {
 			if (err){
 				console.log(err);
@@ -89,7 +113,7 @@ exports.save = function(req, res){
 		});
 		
 		db.serialize(function(){
-			db.run(update, function(err) {
+			db.run(sql, function(err) {
 	            if (err) throw err;
 	            process.nextTick(function() {
 	            	db.close();
@@ -112,7 +136,12 @@ exports.edit = function(req, res){
 		}
 	});
 	
-	readUserRow(req, res);
+	if(req.params.id){	
+	   readUserRow(req, res);
+	}else{
+		users = { id : null, username : '', password : '', email : '', firstname: '', lastname: '' };
+		readAffiliationRows(req, res);
+	}
 	
 }; 
 
@@ -121,7 +150,7 @@ function readUserRow(req, res){
 	
 	var id = req.params.id;
 		
-	var query = "select u.ID, u.FirstName, u.LastName, u.Email, u.Created, u.Updated, u.IsActive, a.Name as Affiliation, u.AffiliationID as AffiliationId from User u left outer join Affiliation a on u.AffiliationID=a.ID where u.IsActive=1 and u.ID=" + id + ";";
+	var query = "select u.ID, u.FirstName, u.LastName, u.Email, u.Created, u.Updated, u.IsActive, a.Name as Affiliation, u.AffiliationID as AffiliationId from User u left outer join Affiliation a on u.AffiliationID=a.ID where u.ID=" + id + ";";
 
 	console.log("querying " + path.resolve(dbpath) + " with: " + query);
 	
@@ -158,13 +187,13 @@ function readAffiliationRows(req, res){
 
 function renderUserAndClose(req, res){
 	
-	title =  "Viewing " + users.FirstName + " " + users.LastName;
+	title =  users.ID ? "Editing " + users.FirstName + " " + users.LastName : "Creating New User";
 	
 	console.log(title);
 	
 	db.close();
 	
-	res.render('user_edit', {title: title, users: users, affiliations: affiliations, errors: errors});
+	res.render('user_edit', {title: title, users: users, affiliations: affiliations, errors: errors, isAdmin: req.session.user.IsAdmin});
 	 
-    
+
 }
