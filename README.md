@@ -1,5 +1,10 @@
 # wbvolunteer
 
+wbvolunteer is a Node.js / Express / Jade project for time tracking.
+
+The project has two main domain models: User and TimeEntry. Other entities (Affiliation, ApprovalStatus)
+are just 'helper' classes/tables that have been extracted for data normalization purposes.
+
 ## Objective
 A simple time tracking system.
 
