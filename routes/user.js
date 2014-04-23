@@ -58,7 +58,7 @@ exports.save = function(req, res){
 
 	req.assert('FirstName','Please enter a first name').notEmpty();
 	req.assert('LastName','Please enter a last name').notEmpty();
-	req.assert('Email','Please enter a valid email address').notEmpty();
+	req.assert('Email','Please enter a valid email address').isEmail();
 	req.assert('AffiliationId','Please select an affiliation').notEmpty();
 	
 	if(!req.body.id) req.assert('Password', 'Please create a password').notEmpty();
