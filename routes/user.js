@@ -100,7 +100,7 @@ exports.save = function(req, res){
 			+" ," + req.body.AffiliationId 
 		    +" , '" + sha1(req.body.Password) + "'"
 			+" ," + req.session.user.id
-			+" ," +  (req.body.active_true ? 0 : 1)
+			+" ," +  req.body.IsActive
 			+ ");"; 
 			
 			console.log('creating user with query: ' + sql);
