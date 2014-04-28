@@ -13,6 +13,7 @@ block content
             th Edit
             th Name
             th Affiliation
+            th Hours
             th Date of Work
             th Comments
             th Status
@@ -24,9 +25,11 @@ block content
           - for (var r in timesheets)
             tr
               td
-                a(href= '/timesheets/edit/' + timesheets[r].ID) Edit
+                if user.IsAdmin || timesheets[r].ApprovalStatus=='Pending'
+                  a(href= '/timesheets/edit/' + timesheets[r].ID) Edit
               td= timesheets[r].Name
               td= timesheets[r].Affiliation
+              td= timesheets[r].Hours
               td= timesheets[r].DateOfWork
               td= timesheets[r].Comment
               td= timesheets[r].ApprovalStatus
@@ -34,6 +37,8 @@ block content
               td= timesheets[r].CreatedByName
               td= timesheets[r].Updated
               td= timesheets[r].UpdatedByName
+  
+    a(href='/timesheets/create') Create New
   
   script(type='text/javascript').
     $(document).ready( function() { $('#tablesorter-timesheets').dataTable( { "bJQueryUI": true } ); } );

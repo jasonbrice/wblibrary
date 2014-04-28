@@ -8,7 +8,7 @@ var users = null;
 var errors;
 var title = null;
 var affiliations = null;
-
+var user = null;
 var dbpath = "./database/db.sqlite";
 
 var db;
@@ -25,6 +25,7 @@ exports.list = function(req, res){
 			return done( null, false, { message : 'Database problem: ' + err });
 		}
 	});
+	
 
 	var query = "select * from USERS;"; //u.ID, u.FirstName, u.LastName, u.Email, u.Created, u.Updated, case when u.IsActive then 'Active' else 'Inactive' end as IsActive, a.Name as Affiliation from User u left outer join Affiliation a on AffiliationID=a.ID where u.IsActive=1;";
 

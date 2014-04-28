@@ -8,6 +8,7 @@ var timesheet = null;
 var errors;
 var title = null;
 var affiliations = null;
+var user = null;
 
 var dbpath = "./database/db.sqlite";
 
@@ -16,6 +17,8 @@ var db;
 exports.list = function(req, res){
 	
 	console.log("Accessing: " + __filename);
+	
+	user = req.session.user;
 	
 	var renderPage = "timesheet_list";
 	
@@ -26,7 +29,8 @@ exports.list = function(req, res){
 		}
 	});
 
-	var query = "select * from TIMESHEETS";
+	var query = "select * from TIMESHEETS order by Updated desc;";
+	if( !user.IsAdmin ) query += " where UserID=" + user.ID;
 
 	console.log("querying " + path.resolve(dbpath) + " with: " + query);
 	
@@ -44,7 +48,7 @@ exports.list = function(req, res){
 		
 		console.log('Rendering ' + renderPage);
 		
-		res.render(renderPage, {title: 'Viewing ' + timesheets.length + ' timesheets', timesheets:timesheets});
+		res.render(renderPage, {title: 'Viewing ' + timesheets.length + ' timesheets', timesheets:timesheets, user:user});
 		
 		db.close();
 		
@@ -57,7 +61,7 @@ exports.save = function(req, res){
 	console.log("Accessing: " + __filename);
 
 	req.assert('Hours','Please enter the number of hours').notEmpty();
-	req.assert('DateOfWork','Please enter a last name').notEmpty();
+	req.assert('DateOfWork','Please enter the date of the work').notEmpty();
 	
 	errors = req.validationErrors();  
 	
@@ -73,30 +77,34 @@ exports.save = function(req, res){
 		
 		if(req.body.id){
 		
-			console.log('IsActive=' + req.body.IsActive);
-			
-			
 			sql = "update TimeEntry set"
 				+" Hours='" + req.body.Hours + "'"
 				+" ,DateOfWork='" + req.body.DateOfWork + "'"
 				+" ,Comment='" + req.body.Comment + "'"
 				+" ,Updated=date('now')"
-				+" ,UpdatedBy=" + req.session.user.id
+				+" ,UpdatedBy=" + req.session.user.ID
 				+ " where ID=" + req.body.id + ";";
 			
 			console.log('updating user with query: ' + sql);
 		}
 		else{
-			sql = "insert into TimeEntry(Hours, DateOfWork, Comment, Updated, UpdatedBy, CreatedBy) values("
+			
+			var dateparts = req.body.DateOfWork.valueOf().split('/');
+			
+			var workdate = dateparts[2] + "-" + dateparts[0] + "-" + dateparts[1];
+				
+			sql = "insert into TimeEntry(Hours, DateOfWork, Comment, UserID, Updated, UpdatedBy, CreatedBy, ApprovalStatusID) values("
 			+ req.body.Hours
-			+" , " + req.body.DateOfWork 
+			+" , '" + workdate + "'" 
 			+" ,'" + req.body.Comment + "'"
+			+", " + req.session.user.ID
 			+" , date('now')"
-			+" ," + req.session.user.id
-			+" ," + req.session.user.id
+			+" ," + req.session.user.ID
+			+" ," + req.session.user.ID
+			+", (select ID from ApprovalStatus where name='Pending') "
 			+ ");"; 
 			
-			console.log('creating user with query: ' + sql);
+			console.log('creating timeentry with query: ' + sql);
 		}
 		db = new sqlite3.Database( dbpath, function(err) {
 			if (err){
@@ -133,6 +141,10 @@ exports.edit = function(req, res){
 		}
 	});
 
+	if(req.params.id){	
+		   
+	user = req.session.user;  
+	
 	var query = "select * from TIMESHEETS where ID=" + id;
 
 	console.log("querying " + path.resolve(dbpath) + " with: " + query);
@@ -149,11 +161,22 @@ exports.edit = function(req, res){
 			console.log("found 0 results");
 		}
 		
-		console.log('Rendering ' + renderPage);
-		
-		res.render(renderPage, {title: 'Timesheet for ' + timesheet.Name, timesheet:timesheet});
+		if(timesheet.ApprovalStatus == 'Pending' || req.session.user.IsAdmin)
+		{
+			console.log('rendering ' + renderPage);
+			res.render(renderPage, {title: 'Timesheet for ' + timesheet.Name, timesheet:timesheet});
+		}else{
+			console.log("user is not authorized, returning");
+			AuthorizationError = "You are not authorized for that resource";
+			res.redirect('/');
+		}
 		
 		db.close();
 		
 	});
+	
+	}else{
+		timesheet = { id : null, UserID : req.session.user.ID, Hours : 0, DateOfWork : '', Comment: '', ApprovalStatusID: null };
+		res.render(renderPage, {title: 'Timesheet for ' + user.firstname + ' ' + user.lastname, timesheet:timesheet});
+	}
 };

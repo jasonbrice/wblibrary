@@ -18,13 +18,21 @@ var sqlite3 = require('sqlite3').verbose();
 var sha1 = require('sha1');
 var users= [{}];
 
-function findById(id, fn) {
-	var idx = id - 1;
-	if (users[idx]) {
-		fn(null, users[idx]);
-	} else {
-		fn(new Error('User ' + id + ' does not exist'));
+function findById(ID, fn) {
+	
+	var user;
+	
+	for(i=0;i<users.length;i++){
+		if(users[i].ID == ID) user = users[i];
 	}
+	
+	if(user){
+		fn(null, user);
+	} else {
+		console.log("Unknown user");
+		fn(new Error('User ' + ID + ' does not exist'));
+	}
+	
 }
 
 
@@ -34,13 +42,13 @@ function findById(id, fn) {
 // this will be as simple as storing the user ID when serializing, and finding
 // the user by ID when deserializing.
 passport.serializeUser(function(user, done) {
-	console.log('serializeUser');
-	done(null, user.id);
+	console.log('serializingUser ' + user.ID);
+	done(null, user.ID);
 });
 
-passport.deserializeUser(function(id, done) {
-	console.log('deserializeUser');
-	findById(id, function(err, user) {
+passport.deserializeUser(function(ID, done) {
+	console.log('deserializeUser ' + ID);
+	findById(ID, function(err, user) {
 		done(err, user);
 	});
 });
@@ -70,7 +78,7 @@ passport.use(new LocalStrategy( function(username, password, done) {
 	var query = "select u.ID, u.FirstName, u.LastName, u.Email, u.Password, u.IsActive, case when r.ID is null then 0 else r.ID end as IsAdmin "
 		 + " from User u "
 		 + " left outer join UserRole ur on u.ID=ur.UserID "
-		 + " left join Role r on ur.RoleID=r.ID and r.Name='Admin' "
+		 + " left outer join Role r on ur.RoleID=r.ID and r.Name='Admin' "
 		 + " where lower(u.Email)='" + username.toLowerCase().trim() + "';";
 
 	console.log("querying " + path.resolve(dbpath) + " with: " + query);
@@ -84,7 +92,7 @@ passport.use(new LocalStrategy( function(username, password, done) {
 		if (row) {
 						
 			
-			var user = { id : row.ID, username : row.Email, password : row.Password, email : row.Email, firstname: row.FirstName, lastname: row.LastName };
+			var user = { ID : row.ID, username : row.Email, password : row.Password, email : row.Email, firstname: row.FirstName, lastname: row.LastName };
             
 			if(row.IsAdmin == 0){
 				user.IsAdmin = false;
@@ -185,19 +193,21 @@ app.get('/logout', function(req, res) {
 });
 
 //register the route to view a list of users
-app.get('/users/list', user.list);
-app.get('/users/edit', ensureAuthenticated, user.list);
+app.get('/users/list', ensureAuthenticated, adminAuthorize, user.list);
+app.get('/users/edit', ensureAuthenticated, adminAuthorize, user.list);
 
 // id will be available as req.params.id;
-app.get('/users/edit/:id', ensureAuthenticated, user.edit);
-app.post('/users/edit', ensureAuthenticated, user.save);
-app.get('/users/create', ensureAuthenticated, user.edit);
-app.post('/users/edit/:id', ensureAuthenticated, user.save);
+app.get('/users/edit/:id', ensureAuthenticated, adminAuthorize, user.edit);
+app.post('/users/edit', ensureAuthenticated, adminAuthorize, user.save);
+app.get('/users/create', ensureAuthenticated, adminAuthorize, user.edit);
+app.post('/users/edit/:id', ensureAuthenticated, adminAuthorize, user.save);
 
 
-app.get('/timesheets', timesheet.list);
+
+app.get('/timesheets', ensureAuthenticated, timesheet.list);
+app.get('/timesheets/create', ensureAuthenticated, timesheet.edit);
 app.get('/timesheets/edit/:id', timesheet.edit);
-app.post('/timsheets/edit/:id', timesheet.save);
+app.post('/timesheets/save', timesheet.save);
 
 http.createServer(app).listen(app.get('port'), function() {
 	console.log('Express server listening on port ' + app.get('port'));
@@ -215,4 +225,15 @@ function ensureAuthenticated(req, res, next) {
 	}
 	console.log("user is not authenticated, redirecting to login page");
 	res.redirect('/login');
-}
+};
+
+// Simple route middleware to ensure user has admin role.
+function adminAuthorize(req, res, next){
+	if(req.session.user.IsAdmin){
+		console.log('User is an admin');
+		return next();
+	}	
+	
+};
+
+

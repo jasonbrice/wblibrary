@@ -199,7 +199,7 @@ drop view if exists TIMESHEETS;
 CREATE VIEW IF NOT EXISTS TIMESHEETS AS 
    select t.ID, u.FirstName || ' ' || u.LastName as Name,
    t.Hours, date(t.DateOfWork) as DateOfWork, 
-   t.Comment, t.Created, t.Updated as Updated, u2.FirstName || ' ' || u2.LastName as CreatedByName, 
+   t.Comment, date(t.Created) as Created, date(t.Updated) as Updated, u2.FirstName || ' ' || u2.LastName as CreatedByName, 
    u3.FirstName || ' ' || u3.LastName as UpdatedByName, a.Name as ApprovalStatus, 
    case when af.Name is null then 'None' else af.Name end as Affiliation, 
    u.ID as UserID, u2.ID as CreatedByID, u3.ID as UpdatedByID, af.ID as AffiliationID, 
